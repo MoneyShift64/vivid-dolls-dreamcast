@@ -106,10 +106,9 @@ photo is cleared as a 99% "perfect" clear, which also awards an Extra Stage key.
 
 | Folder | Contents |
 |---|---|
-| `src/game/` | The game: the decompiled arcade code (system, graphics, sound, objects, photo decoder, and the four overlays: test mode, attract, the game itself and girl select). |
-| `port/` | The Dreamcast side: the libultra replacement on KallistiOS, the display-list-to-PowerVR renderer, the sound mixer, controls, and the start-up data loader. |
-| `tools/` | The decompilation tools, the tests that check the C against the original code, and the disc builder. |
-| `docs/` | Notes on the ROM, its formats and every part of the code; `docs/DECOMP.md` describes the decompilation and the matching ROM build. |
+| `src/` | The game: the decompiled arcade code (system, graphics, sound, objects, photo decoder, and the four overlays: test mode, attract, the game itself and girl select). |
+| `platform/dc/` | The Dreamcast side: the libultra replacement on KallistiOS (threads, video, controllers), the display-list-to-PowerVR renderer, the sound mixer, the start-up data loader and its tables, and the Makefile. |
+| `tools/` | What the build uses: checking your ROM and making the disc image. |
 | `images/` | The screenshots on this page. |
 
 ## Credits
@@ -117,7 +116,7 @@ photo is cleared as a 99% "perfect" clear, which also awards an Extra Stage key.
 - [KallistiOS](https://github.com/KallistiOS/KallistiOS) and the Dreamcast homebrew
   community, [SH4ZAM](https://github.com/gyrovorbis/sh4zam),
   [mkdcdisc](https://gitlab.com/simulant/mkdcdisc), [Flycast](https://github.com/flyinghead/flycast).
-- The decompilation tools [splat](https://github.com/ethteck/splat),
+- The decompilation was done with [splat](https://github.com/ethteck/splat),
   [spimdisasm](https://github.com/Decompollaborate/spimdisasm),
   [m2c](https://github.com/matt-kempster/m2c) and the
   [Unicorn](https://github.com/unicorn-engine/unicorn) emulator.

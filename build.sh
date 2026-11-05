@@ -24,11 +24,11 @@ if [ -z "$KOS_BASE" ]; then
     exit 1
 fi
 if [ "${CHEAT:-0}" != 0 ]; then
-    make -f port/Makefile.dc CHEAT=1
-    VD_FIRST_READ=build/dc-cheat/1ST_READ.BIN tools/port/make_cdi.sh "$ROM" vividdolls-cheat.cdi
+    make -f platform/dc/Makefile CHEAT=1
+    VD_FIRST_READ=build/dc-cheat/1ST_READ.BIN tools/make_cdi.sh "$ROM" vividdolls-cheat.cdi
     echo "Made vividdolls-cheat.cdi"
 else
-    make -f port/Makefile.dc
-    tools/port/make_cdi.sh "$ROM" vividdolls.cdi
+    make -f platform/dc/Makefile
+    tools/make_cdi.sh "$ROM" vividdolls.cdi
     echo "Made vividdolls.cdi"
 fi
