@@ -1,7 +1,7 @@
 # Vivid Dolls for Sega Dreamcast
 
 A native Sega Dreamcast port of the 1998 Visco arcade game **Vivid Dolls**, built on a
-decompilation of the original Seta Aleck64 arcade board's code.
+decompilation of the original Seta Aleck 64 arcade board's code.
 
 **No game data is included.** You need your own dump of the Vivid Dolls arcade ROM. The
 build puts your ROM on the disc image it makes, and the game reads everything (graphics,
@@ -26,8 +26,8 @@ run time by the game's own decoder, exactly as on the arcade board.
 
 Version 1.0 includes:
 
-- The whole game: the title and attract mode, girl select, all photos of all eight girls,
-  the Extra Stage keys and bonus stage, continues, and the ending.
+- The whole game: the title and attract mode, girl select, all stages for all eight girls,
+  the Extra Stage keys and each bonus stage.
 - One or two players, with coins and credits as in the arcade.
 - Full Dreamcast controller mapping.
 - The original music and sound effects, mixed on the Dreamcast.
