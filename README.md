@@ -74,7 +74,7 @@ changed. Nothing is downloaded.
 | Button | In the Game |
 |---|---|
 | X | Insert a coin. |
-| Start | Start a game, or join in as player 2. |
+| Start | Start a game, or join in as Player 2. |
 | Analogue Stick or D-Pad | Move. |
 | A | Draw lines (hold); choose a girl on the select screen. |
 
