@@ -73,12 +73,10 @@ changed. Nothing is downloaded.
 
 | Button | In the Game |
 |---|---|
-| X | Insert a coin |
-| Start | Start a game, or join in as player 2 |
-| Analogue Stick or D-Pad | Move |
-| A | Draw lines (hold); choose a girl on the select screen |
-| B | Button 2 |
-| Y | Button 3 |
+| X | Insert a coin. |
+| Start | Start a game, or join in as player 2. |
+| Analogue Stick or D-Pad | Move. |
+| A | Draw lines (hold); choose a girl on the select screen. |
 
 On the select screen, left and right turn the ring of girls and A picks the one at the
 front. Hold **A + B + X + Y + Start** together at any time to go back to the boot logo.
