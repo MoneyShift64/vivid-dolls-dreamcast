@@ -1,0 +1,145 @@
+name: Vivid Dolls (Aleck64)
+sha1: 747e9420cce23ff82b5922cd91ec43272d03fa4f
+options:
+  basename: vividdolls
+  target_path: baserom.z64
+  base_path: .
+  platform: n64
+  compiler: GCC
+
+  asm_path: asm
+  src_path: src
+  build_path: build
+  asset_path: assets
+
+  ld_script_path: vividdolls.ld
+  ld_dependencies: True
+  elf_path: build/vividdolls.elf
+  subalign: 8
+  ld_align_section_vram_end: False
+  ld_align_segment_vram_end: False
+
+  symbol_addrs_path:
+    - symbol_addrs.txt
+  undefined_funcs_auto_path: undefined_funcs_auto.txt
+  undefined_syms_auto_path: undefined_syms_auto.txt
+
+  find_file_boundaries: True
+  header_encoding: ASCII
+  o_as_suffix: True
+  use_legacy_include_asm: False
+  mips_abi_float_regs: numeric
+  asm_function_macro: glabel
+  asm_jtbl_label_macro: jlabel
+  asm_data_macro: dlabel
+  section_order: [".text", ".data", ".rodata", ".bss"]
+  auto_link_sections: [".data", ".rodata", ".bss"]
+  extensions_path: tools/splat_ext
+  string_encoding: ASCII
+  data_string_encoding: ASCII
+  rodata_string_guesser_level: 2
+  data_string_guesser_level: 2
+
+segments:
+  - name: header
+    type: header
+    start: 0x0
+
+  - name: ipl3
+    type: bin
+    start: 0x40
+
+  # ---- main program: ROM 0x1000 -> RAM 0x80000400, BSS 0x8003E130-0x800C5400 ----
+  - name: main
+    type: code
+    start: 0x1000
+    vram: 0x80000400
+    bss_size: 0x872D0
+    subsegments:
+      - [0x1000, asm, entry]
+      - [0x1050, asm, game]        # Visco game code (0x80000450-0x8001C43F)
+      - [0x1D040, asm, libultra]   # Nintendo libultra 2.0H + libc + rmon
+      - [0x38D50, data]
+      - [0x3E150, rodata]
+      - { start: 0x3ED30, type: bss, vram: 0x8003E130 }
+
+  # ---- overlays (table at 0x8003A280, loader func_8000C0D4) ----
+  # ovl0 = test / service mode ("TEST MODE MENU")
+  - name: ovl0
+    type: code
+    start: 0x3ED30
+    vram: 0x800E0000
+    exclusive_ram_id: overlay
+    subsegments:
+      - [0x3ED30, asm]
+      - [0x437E0, rodata]
+
+  # ovl1 = boot / attract sequence (loaded first by the main loop func_8001C000)
+  - name: ovl1
+    type: code
+    start: 0x43AD0
+    vram: 0x800E0000
+    bss_size: 0x160
+    exclusive_ram_id: overlay
+    subsegments:
+      - [0x43AD0, asm]
+      - [0x44A90, data]
+      - { start: 0x45270, type: bss, vram: 0x800E17A0 }
+
+  # ovl2 = the game itself (largest overlay)
+  - name: ovl2
+    type: code
+    start: 0x45270
+    vram: 0x800E0000
+    bss_size: 0x2500
+    exclusive_ram_id: overlay
+    subsegments:
+      - [0x45270, asm]
+      - [0x5B600, data]
+      - [0x601B0, rodata]   # real start 0x601B8; kept 16-aligned for GNU as
+      - { start: 0x602C0, type: bss, vram: 0x800FB050 }
+
+  # ovl3 = small overlay, purpose not identified yet
+  - name: ovl3
+    type: code
+    start: 0x602C0
+    vram: 0x800E0000
+    bss_size: 0xD0
+    exclusive_ram_id: overlay
+    subsegments:
+      - [0x602C0, asm]
+      - [0x60E00, data]
+      - { start: 0x611F0, type: bss, vram: 0x800E0F30 }
+
+  # ---- game assets: 506 "Siff" files (LZSS or raw), see tools/assets.py ----
+  - name: assets
+    type: bin
+    start: 0x611F0
+
+  # ---- 8x8 1bpp debug font ----
+  - name: font8x8
+    type: bin
+    start: 0x196710
+
+  # ---- audio, standard libultra formats (loaded by Audio_Init, 0x8000D93C) ----
+  - name: music_bank_ctl     # "B1" ALBankFile
+    type: bin
+    start: 0x196CC0
+  - name: music_bank_tbl     # ADPCM samples for the music bank
+    type: bin
+    start: 0x1982B0
+  - name: music_sequences    # "S1" ALSeqFile, 15 sequences
+    type: bin
+    start: 0x1D7720
+  - name: sfx_bank_ctl       # "B1" ALBankFile
+    type: bin
+    start: 0x1E2870
+  - name: sfx_bank_tbl       # ADPCM samples for sound effects
+    type: bin
+    start: 0x1E3EA0
+
+  - name: padding
+    type: bin
+    start: 0x23AFE0
+
+  - [0x800000]

@@ -1,0 +1,25 @@
+# ROM and everything generated from it (never share these)
+baserom.z64
+*.u3
+*.z64
+asm/
+assets/
+build/
+extracted/
+vividdolls.ld
+undefined_funcs_auto.txt
+undefined_syms_auto.txt
+port/vd_jpeg64_tables.h
+.splache
+# Python
+.venv/
+__pycache__/
+vividdolls.d
+# compiled test programs
+port/gfx/tests/test_f3d
+port/gfx/tests/test_texfill
+port/gfx/tests/test_rom_dls
+port/gfx/tests/test_f3d_shz
+port/gfx/tests/*.so
+*.o
+*.mips.o
