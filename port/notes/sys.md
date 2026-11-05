@@ -39,8 +39,7 @@ Checks done without a Dreamcast:
 | `port/ultra/os_pi.c` | PI DMA = memcpy from the ROM image (0xFF beyond it), message posted at once; cache ops no-ops; osVirtualToPhysical = identity |
 | `port/ultra/os_sp.c` | osSpTaskLoad/StartGo: gfx task -> `f3d_run_task()` (PVR scene) + SP done (+ DP done for XBUS tasks); audio task -> SP done at once; osDpSetNextBuffer -> DP done; no yields |
 | `port/ultra/os_cont.c` | Maple pads -> N64 controller data and Aleck64 I/O registers, coin pulse, test/service combos, soft-reset combo |
-| `port/ultra/os_eeprom.c` | EEPROM 4K (512 bytes) in RAM, saved to VMU file `VIVIDOLL.EEP` by a background thread (with the user's icon); controller pak = not present |
-| `tools/port/gen_vmu_icon.py` | build step: `port/assets/vmu_icon.png` (32x32 RGBA) -> `build/dc/gen/vd_vmu_icon.c` (16-colour ARGB4444 palette by k-means, 4 bpp, high nibble = left pixel). Needs only python3 (own PNG decoder; checked against PIL: same pixels, mean colour error 8/255) |
+| `port/ultra/os_eeprom.c` | EEPROM 4K (512 bytes) in RAM only (the game never saves; only test mode's system check touches it); controller pak = not present |
 | `port/ultra/al_stub.c` | audio library: real heap/link/cents/alSeqFileNew/alBnkfNew (+ BE->native conversion), silent stub players, osAi* |
 | `port/ultra/libc_ultra.c` | sinf/cosf (libultra), sqrtf (fsqrt), fabsf, sprintf, osInitialize, __osGetCurrFaultedThread, Main_ForceLink-only stubs |
 | `port/sys/main.c` | KOS entry: video, ROM, vd_dataload, PVR + F3D init, shim init, Main_Boot, soft reset |
@@ -132,8 +131,7 @@ None of these change the MIPS build, so the difftests are unaffected.
    [vd_stack_floor, stack top].
 2. osViBlack is recorded (`vd_vi_black`) but the PVR output is not blanked; the game
    draws black anyway until its first swap, check the boot.
-3. EEPROM default content (no VMU file) is all 0x00; check that the game initialises it
-   (it should rewrite it when the checksum is bad) and that the VMU file appears.
+3. (resolved) The EEPROM is only used by test mode's system check, so nothing is saved.
 4. Test mode (ovl0) is untested; its SDRAM check is redirected (see above).
 5. PAL-only TVs: video is forced to 60 Hz (NTSC 480i or VGA).
 6. If the game ever spins on a volatile waiting for a lower-priority thread, KOS ageing

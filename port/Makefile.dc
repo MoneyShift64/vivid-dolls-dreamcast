@@ -89,14 +89,11 @@ PORT_C := $(sort $(wildcard $(ROOT)/port/ultra/*.c)) \
           $(sort $(wildcard $(ROOT)/port/audio/*.c))
 PORT_S := $(ROOT)/port/sys/task_sh4.S
 PYTHON ?= python3
-VMU_ICON_PNG := $(ROOT)/port/assets/vmu_icon.png
-VMU_ICON_C   := $(BUILD)/gen/vd_vmu_icon.c
-VMU_ICON_O   := $(BUILD)/gen/vd_vmu_icon.o
 
 GAME_OBJS := $(patsubst $(ROOT)/src/game/%.c,$(BUILD)/game/%.o,$(GAME_PLAIN)) \
              $(patsubst %.c,$(BUILD)/game/%.o,$(GAME_FIX))
 PORT_OBJS := $(patsubst $(ROOT)/%.c,$(BUILD)/%.o,$(PORT_C)) \
-             $(patsubst $(ROOT)/%.S,$(BUILD)/%.o,$(PORT_S)) $(VMU_ICON_O)
+             $(patsubst $(ROOT)/%.S,$(BUILD)/%.o,$(PORT_S))
 LDSCRIPTS := $(ROOT)/port/gen/vd_blocks_sh.ld $(ROOT)/port/gen/vd_func_aliases_sh.ld \
              $(ROOT)/port/sys/vd_sys_sh.ld
 
@@ -141,14 +138,6 @@ $(BUILD)/port/%.o: $(ROOT)/port/%.c
 $(BUILD)/port/%.o: $(ROOT)/port/%.S
 	@mkdir -p $(dir $@)
 	$(AS) $(FPFLAGS) -c $< -o $@
-
-# VMU save icon (port/assets/vmu_icon.png, 32x32) -> 16-colour ARGB4444 + 4 bpp C arrays
-$(VMU_ICON_C): $(VMU_ICON_PNG) $(ROOT)/tools/port/gen_vmu_icon.py
-	@mkdir -p $(dir $@)
-	$(PYTHON) -I $(ROOT)/tools/port/gen_vmu_icon.py $< $@
-
-$(VMU_ICON_O): $(VMU_ICON_C)
-	$(CC) $(PORT_CFLAGS) -c $< -o $@
 
 $(ELF): $(GAME_OBJS) $(PORT_OBJS) $(LDSCRIPTS)
 	$(CC) -o $@ $(GAME_OBJS) $(PORT_OBJS) $(LDSCRIPTS) $(SHZ_LIBS) -lm -Wl,-Map,$(BUILD)/vividdolls.map

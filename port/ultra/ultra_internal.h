@@ -133,8 +133,8 @@ extern volatile u16 vd_dip_switches;          /* DIP word as the game sees it (1
 volatile u16 *vd_io_reg(u32 addr);            /* Aleck64 I/O register at 0x02000000+ */
 extern void (*vd_soft_reset_request)(void);   /* called (from the interrupt) on A+B+X+Y+Start */
 
-/* ---- EEPROM -> VMU (os_eeprom.c) ---- */
-void vd_eeprom_init(void);                    /* load from the VMU, start the writer thread */
+/* ---- EEPROM, RAM only (os_eeprom.c) ---- */
+void vd_eeprom_init(void);                    /* nothing to do: the game never saves */
 
 /* ---- audio library stubs (al_stub.c) ---- */
 void vd_audio_stub_reset(void);

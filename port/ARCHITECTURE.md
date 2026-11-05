@@ -13,7 +13,7 @@ ROM, as on buildmycdi.cloud: **no ROM-derived data is compiled into the program*
    │  calls libultra (os*, al*, gu*), reads/writes globals, builds F3D display lists
    ▼
  port/ultra/   libultra shim on KOS: threads, message queues, events, VI, PI, SI,
-               controller, EEPROM/PFS → VMU, timers, gu* maths (SH4ZAM)
+               controller, EEPROM (RAM only)/PFS, timers, gu* maths (SH4ZAM)
  port/gfx/     F3D (Fast3D, libultra 2.0H) display-list interpreter → PVR
  port/audio/   libultra audio library + software synthesis → AICA stream (later milestone)
  port/sys/     boot, memory blocks, data loader, ROM file, task switcher, input mapping
@@ -127,7 +127,8 @@ call logs are compared frame by frame. Same pointer size and same byte order as 
   combo for **coin** (default: X on each pad), test/service switches on a hidden combo.
 * **Soft reset: A + B + X + Y + Start** held together returns to the boot logo.
 * DIP switches: an options screen (or defaults matching the arcade's factory settings).
-* EEPROM (bookkeeping/settings, 512 bytes) → VMU save file.
+* EEPROM (512 bytes) kept in RAM only: the game never saves (only test mode's
+  system check writes it), so nothing goes to the VMU.
 
 ## 7. Audio (second milestone)
 The game uses the libultra audio library (`alInit`, `alCSPlayer` sequence player,
@@ -149,6 +150,6 @@ libultra audio library plus an audio-microcode HLE that mixes in software on the
 ## 9. Milestones
 1. Boots in Flycast: boot logo → title screen (with the photo decoded by the game's own
    decoder) → girl select, silent. Coin + start work.
-2. Full game playable, silent; VMU saves; soft reset.
+2. Full game playable, silent; soft reset.
 3. Audio.
 4. Polish: test mode, options, real-hardware check on GDEMU.

@@ -23,3 +23,5 @@ port/gfx/tests/test_f3d_shz
 port/gfx/tests/*.so
 *.o
 *.mips.o
+# disc images built from your ROM (never share these)
+*.cdi

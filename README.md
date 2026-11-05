@@ -1,169 +1,126 @@
-# Vivid Dolls decompilation (Seta Aleck64 → Sega Dreamcast)
+# Vivid Dolls for Sega Dreamcast
 
-A decompilation project for **Vivid Dolls** (Visco, 1998), an arcade game that ran on
-the Seta Aleck64 board (basically an N64 in an arcade cabinet). The end goal is a
-native Dreamcast port. See `docs/ROADMAP.md` for the plan and `docs/FORMATS.md` for
-everything known about the ROM.
+A native Sega Dreamcast port of the 1998 Visco arcade game **Vivid Dolls**, built on a
+decompilation of the original Seta Aleck64 arcade board's code.
 
-**Current state:** the ROM splits and rebuilds byte-for-byte; all asset formats are
-documented and have portable C code; **534 of 542 game functions (99.4% of all game code) are decompiled to clean C and
-verified against the original**: all of the main code except 8 hand-written assembly
-routines (task context switch, TLB access), and all four overlays (test mode, attract,
-the game itself, girl select). Every function has a
-first-draft C version in `src/draft/`. Run `python3 tools/progress.py` for details.
+**No game data is included.** You need your own dump of the Vivid Dolls arcade ROM. The
+build puts your ROM on the disc image it makes, and the game reads everything (graphics,
+photos, sound and music) from it at start-up. Please don't share any disc images that you
+might build.
 
-> This repository contains no game data. You need your own `nus-zsaj-0.u3` ROM dump.
+![A 99% clear](images/stage-clear.png)
+![Selecting a stage](images/select-a-stage.png)
+![Collecting an Extra Stage key](images/extra-stage-key.png)
 
-## What's in here
-| Path | What |
-|---|---|
-| `vividdolls.yaml` | splat config: how the ROM is cut up |
-| `symbol_addrs.txt` | names for known functions and data |
-| `Makefile` | rebuilds the ROM and checks it matches |
-| `src/game/` | **decompiled game code**, clean C, each function verified against the original |
-| `src/draft/` | machine-made first drafts (m2c) of all 542 game functions |
-| `port/` | portable C for the asset formats (used by the Dreamcast port) |
-| `tools/` | helper scripts (ROM prep, asset tools, table generator…) |
-| `docs/` | technical notes, roadmap, asset list |
-| `asm/`, `assets/` | *created by `make setup` from your ROM – not included* |
+## AI Disclosure
 
----
+This port was written with the assistance of Claude. Many hours of human testing were spent on real Dreamcast hardware, and then refining the game. If this use of AI is in conflict with your personal beliefs or values, please leave this page now. Thanks.
 
-## Setup on a Mac (step by step)
+## Features
 
-You only need to do steps 1–4 once.
+The arcade game's own code, decompiled to C and checked function by function against the
+original, running natively on the Dreamcast: the same eight girls, photos, enemies, bosses,
+items, bonus stage and ending, drawn by the Dreamcast's PowerVR graphics chip at 60 frames
+a second, at 640x480, with the original music and sound effects. The photos are decoded at
+run time by the game's own decoder, exactly as on the arcade board.
 
-### 1. Install the tools
-Open **Terminal** (press Cmd + Space, type `Terminal`, press Return). Copy each
-command below, paste it into Terminal, and press Return. Wait for each one to finish
-(you'll see the prompt again) before doing the next.
+Version 1.0 includes:
 
-Update Homebrew's list of packages:
-```
-brew update
-```
-Install Python, GNU Make and the MIPS assembler/linker (this takes a few minutes):
-```
-brew install python3 make tehzz/n64-dev/mips64-elf-binutils
-```
+- The whole game: the title and attract mode, girl select, all photos of all eight girls,
+  the Extra Stage keys and bonus stage, continues, and the ending.
+- One or two players, with coins and credits as in the arcade.
+- Full Dreamcast controller mapping.
+- The original music and sound effects, mixed on the Dreamcast.
+- The arcade's own operator test mode.
 
-### 2. Go to the project folder
-Double-click the downloaded zip in your **Downloads** folder; it unpacks into a folder
-called `vividdolls-decomp`. Then in Terminal:
-```
-cd ~/Downloads/vividdolls-decomp
-```
-(Every command from now on must be run from inside this folder. If you open a new
-Terminal window later, run this `cd` command again first.)
+## Requirements
 
-### 3. Install the Python helpers
-This makes a private Python environment inside the project folder, so nothing
-touches the rest of your Mac:
-```
-python3 -m venv .venv
-```
-Switch it on:
-```
-source .venv/bin/activate
-```
-Your prompt now starts with `(.venv)`. Install splat (the ROM splitter) and Pillow
-(for images):
-```
-pip install "splat64[mips]==0.50.1" pillow
-```
-
-### 4. Add your ROM
-Type the start of this command, **including the space at the end**, but don't press
-Return yet:
-```
-python3 tools/prepare_rom.py 
-```
-Now drag your `nus-zsaj-0.u3` file from Finder into the Terminal window (this pastes
-its location), then press Return. You should see `SHA1 OK`. This writes a correctly
-byte-ordered copy called `baserom.z64`; your original file isn't changed.
-
-Split the ROM into assembly and data files:
-```
-gmake setup
-```
-
-## Every time after that
-Open Terminal, then go to the folder:
-```
-cd ~/Downloads/vividdolls-decomp
-```
-Switch on the Python environment:
-```
-source .venv/bin/activate
-```
+- [KallistiOS](https://github.com/KallistiOS/KallistiOS) with its SH-4 toolchain
+  (`kos-cc`), set up and working, and [SH4ZAM](https://github.com/gyrovorbis/sh4zam)
+  installed from kos-ports.
+- [mkdcdisc](https://gitlab.com/simulant/mkdcdisc), to make the `.cdi` disc image.
+- Python 3 (no extra packages needed).
+- Your own Vivid Dolls ROM: the chip dump **`nus-zsaj-0.u3`** (8 MB). A byte-swapped
+  `.z64` copy also works. The build checks it (SHA-1 of the `.z64`-order ROM:
+  `747e9420cce23ff82b5922cd91ec43272d03fa4f`).
 
 ## Building
-Rebuild the ROM from the split files and check it matches the original:
-```
-gmake
-```
-The last line should say `build/vividdolls.z64: OK - matches the original ROM`.
 
-Test the portable C asset code against your ROM (decompresses all 506 assets and
-decodes every sprite and photo):
-```
-gmake port-test
-```
-It should end with `failures 0`.
+1. You must own the Vivid Dolls ROM. Put `nus-zsaj-0.u3` in the top folder of this
+   project.
+2. Load the KallistiOS environment:
 
-Write a list of all assets to `docs/assets.csv`:
-```
-python3 tools/assets.py list
-```
-Export every sprite as a PNG into `extracted/sprites/`:
-```
-python3 tools/assets.py sprites
-```
+   ```
+   source /opt/toolchains/dc/kos/environ.sh
+   ```
 
-Show how much of the game is decompiled:
-```
-python3 tools/progress.py
-```
+3. Build:
 
-## Dreamcast port
+   ```
+   ./build.sh
+   ```
 
-The port runs the decompiled game C natively on the Dreamcast (KallistiOS), with
-the N64/Aleck64 parts replaced underneath it. The design is in
-`port/ARCHITECTURE.md`; notes on each part are in `port/notes/`.
+This compiles the game and makes **`vividdolls.cdi`**, with your ROM on the disc as
+`VIVIDOLL.ROM` (only the 2.3 MB of it the game uses). Later builds only redo what has
+changed. Nothing is downloaded.
 
-* **No game data is built into the program.** The CDI holds `1ST_READ.BIN` and the
-  player's own ROM (as `VIVIDOLL.ROM`), which the game reads at boot.
-* Controls: X = coin, Start = start, D-pad/stick = move, A/B/Y = buttons 1-3,
-  A+B+X+Y+Start = soft reset. Saves (settings/bookkeeping) go to the VMU.
-* Status: the whole game, with sound, has been played on a real Dreamcast.
+## Running
 
-Building (needs KallistiOS with SH4ZAM, `source /opt/toolchains/dc/kos/environ.sh`):
+- **Real Dreamcast:** copy `vividdolls.cdi` to your GDEMU (or burn it to a CD-R).
+- **Emulator:** open `vividdolls.cdi` in [Flycast](https://github.com/flyinghead/flycast).
 
-| Command | Result |
+## Controls
+
+| Button | In the Game |
 |---|---|
-| `make -f port/Makefile.dc` | release build in `build/dc/` |
-| `make -f port/Makefile.dc CHEAT=1` | testing build in `build/dc-cheat/`: holding L+R ends a round as a 99% clear |
-| `make -f port/Makefile.dc VIEWER=1` | `build/dc-viewer/`: boots straight to the unused title photo |
-| `make -f port/Makefile.dc DEBUG=0x39` | debug-log build in `build/dc-debug/` |
-| `tools/port/make_cdi.sh YOUR_ROM` | `build/dc/vividdolls.cdi` from the release build and your ROM (.u3 or .z64) |
+| X | Insert a coin |
+| Start | Start a game, or join in as player 2 |
+| Analogue Stick or D-Pad | Move |
+| A | Draw lines (hold); choose a girl on the select screen |
+| B | Button 2 |
+| Y | Button 3 |
 
-`VD_FIRST_READ=build/dc-cheat/1ST_READ.BIN tools/port/make_cdi.sh YOUR_ROM OUT.cdi`
-makes a disc from one of the other builds. Automated tests in an emulator
-(headless Flycast) are in `tools/port/dc_harness/` (see `port/notes/boot.md`).
+On the select screen, left and right turn the ring of girls and A picks the one at the
+front. Hold **A + B + X + Y + Start** together at any time to go back to the boot logo.
 
-## How the C code is checked
-Each function in `src/game/` is run side by side with the original code in an
-emulator and the results are compared byte for byte. See `docs/DIFFTEST.md`.
-This is optional; you don't need it to build.
+Holding **L + R + Y** on controller 1 opens the arcade's operator test mode (screen, input,
+sound and output tests). Its system check wipes the arcade's settings memory, as on the real
+board; use the soft reset to leave test mode.
 
-## How the build works (for later)
-- `make setup` runs splat, then `tools/fix_labels.py`, which gives each overlay's
-  symbols a prefix (`ovl2_…`) because all four overlays load at the same address.
-- Overlay 2's read-only data really starts at ROM `0x601B8`; the split uses `0x601B0`
-  because GNU as pads sections to 16 bytes. It makes no difference to the output.
-- Works with either `mips-linux-gnu-` (Linux) or `mips64-elf-` (Homebrew) binutils;
-  both were tested and produce the matching ROM.
+## Saving
 
-## Credits / tools
-[splat](https://github.com/ethteck/splat) · [spimdisasm](https://github.com/Decompollaborate/spimdisasm) ·
-[n64sym](https://github.com/shygoo/n64sym) · GNU binutils
+The arcade game doesn't save anything, so the VMU isn't used.
+
+## Cheats
+
+For testing, a build with a cheat can be made:
+
+```
+CHEAT=1 ./build.sh
+```
+
+This makes **`vividdolls-cheat.cdi`**. In a round, hold **L + R** (on their own) and the
+photo is cleared as a 99% "perfect" clear, which also awards an Extra Stage key.
+
+## Layout
+
+| Folder | Contents |
+|---|---|
+| `src/game/` | The game: the decompiled arcade code (system, graphics, sound, objects, photo decoder, and the four overlays: test mode, attract, the game itself and girl select). |
+| `port/` | The Dreamcast side: the libultra replacement on KallistiOS, the display-list-to-PowerVR renderer, the sound mixer, controls, and the start-up data loader. |
+| `tools/` | The decompilation tools, the tests that check the C against the original code, and the disc builder. |
+| `docs/` | Notes on the ROM, its formats and every part of the code; `docs/DECOMP.md` describes the decompilation and the matching ROM build. |
+| `images/` | The screenshots on this page. |
+
+## Credits
+
+- [KallistiOS](https://github.com/KallistiOS/KallistiOS) and the Dreamcast homebrew
+  community, [SH4ZAM](https://github.com/gyrovorbis/sh4zam),
+  [mkdcdisc](https://gitlab.com/simulant/mkdcdisc), [Flycast](https://github.com/flyinghead/flycast).
+- The decompilation tools [splat](https://github.com/ethteck/splat),
+  [spimdisasm](https://github.com/Decompollaborate/spimdisasm),
+  [m2c](https://github.com/matt-kempster/m2c) and the
+  [Unicorn](https://github.com/unicorn-engine/unicorn) emulator.
+- Vivid Dolls is (c) 1998 Visco Corporation. This project is not affiliated with or
+  endorsed by Visco or Seta.
+- This is a non-commercial preservation project and is not affiliated with or endorsed by Sega.
